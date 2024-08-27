@@ -1,0 +1,40 @@
+<div class="container mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-4">Leave a Review</h2>
+    <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label class="block text-gray-700">Staff Rate</label>
+        <input type="number" formControlName="staffRate" min="1" max="10" class="mt-1 block w-1/4 rounded-md border-gray-300 shadow-md">
+        <div *ngIf="reviewForm.get('staffRate')?.invalid && reviewForm.get('staffRate')?.touched" class="text-red-600">
+          Staff Rate is required and must be between 1 and 10
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Equipment Rate</label>
+        <input type="number" formControlName="equipmentRate" min="1" max="10" class="mt-1 block w-1/4 rounded-md border-gray-300 shadow-md">
+        <div *ngIf="reviewForm.get('equipmentRate')?.invalid && reviewForm.get('equipmentRate')?.touched" class="text-red-600">
+          Equipment Rate is required and must be between 1 and 10
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Hygiene Rate</label>
+        <input type="number" formControlName="hygieneRate" min="1" max="10" class="mt-1 block w-1/4 rounded-md border-gray-300 shadow-md">
+        <div *ngIf="reviewForm.get('hygieneRate')?.invalid && reviewForm.get('hygieneRate')?.touched" class="text-red-600">
+          Hygiene Rate is required and must be between 1 and 10
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Space Rate</label>
+        <input type="number" formControlName="spaceRate" min="1" max="10" class="mt-1 block w-1/4 rounded-md border-gray-300 shadow-md">
+        <div *ngIf="reviewForm.get('spaceRate')?.invalid && reviewForm.get('spaceRate')?.touched" class="text-red-600">
+          Space Rate is required and must be between 1 and 10
+        </div>
+      </div>
+      <div *ngIf="errorMessage" class="text-red-600">
+        {{ errorMessage }}
+      </div>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded" [disabled]="reviewForm.invalid">
+        Submit Review
+      </button>
+    </form>
+  </div>
+  

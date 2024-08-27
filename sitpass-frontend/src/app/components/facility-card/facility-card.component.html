@@ -1,0 +1,16 @@
+<div class="max-w-sm rounded overflow-hidden shadow-lg bg-white">
+  <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
+  <div class="px-6 py-4">
+    <div class="font-bold text-xl mb-2"><p>{{ facility.name }}</p></div>
+    <p class="text-gray-700 text-base">
+      {{ facility.description }}
+    </p>
+  </div>
+  <div class="px-6 py-4">
+    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#gym</span>
+    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#fitness</span>
+    <button (click)="navigateToDetails()" class="mt-5 px-2 py-1 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition duration-200">
+      Details
+    </button>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div *ngIf="facility" class="flex flex-col items-center pt-5">
+  <h2 class="text-3xl font-bold">{{ facility.name }}</h2>
+  <p class="text-gray-600">{{ facility.description }}</p>
+  <div class="mt-4">
+    <strong>Address:</strong> {{ facility.address }}, {{ facility.city }}
+  </div>
+  <div class="mt-2">
+    <strong>Created At:</strong> {{ facility.createdAt }}
+  </div>
+  <div class="mt-2">
+    <strong>Total Rating:</strong> {{ facility.totalRating }}
+  </div>
+  <div class="mt-2" *ngIf="facility.active">
+    <span class="inline-block bg-green-500 text-white px-2 py-1 rounded">Active</span>
+  </div>
+  <div class="mt-4">
+    <h3 class="text-2xl text-center">Images</h3>
+    <div class="grid grid-cols-3 gap-4">
+      <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
+      <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
+      <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
+    </div>
+  </div>
+  <div *ngIf="facility">
+    <div class="mt-4">
+      <h3 class="text-2xl">Work Days</h3>
+      <div *ngFor="let workDay of facility.workDays">
+        {{ workDay.day }}: {{ formatTime(workDay.fromTime) }} - {{ formatTime(workDay.untilTime) }}
+      </div>
+    </div>
+  </div>
+  <div class="mt-4">
+    <h3 class="text-2xl">Disciplines</h3>
+    <ul>
+      <li *ngFor="let discipline of facility.disciplines">
+        {{ discipline.name }}
+      </li>
+    </ul>
+  </div>
+  <button (click)="deleteFacility()" class="px-4 py-2 bg-red-600 text-white rounded mb-2">Delete</button>
+  <button (click)="editFacility()" class="px-4 py-2 bg-blue-600 text-white rounded mb-2">Edit</button>
+  <button (click)="reserveFacility()" class="px-4 py-2 bg-blue-600 text-white rounded mb-2">Reserve</button>
+  <button (click)="leaveReview()" class="px-4 py-2 bg-blue-600 text-white rounded mb-2">Leave review</button>
+  
+  <div class="mt-4">
+    <h3 class="text-2xl text-center">Reviews</h3>
+    <div *ngIf="reviews.length > 0; else noReviews" class="flex">
+      <div *ngFor="let review of reviews" class="m-4 p-4 border rounded shadow">
+        <div class="font-bold">{{ review.authorName }} <span class="text-gray-500">({{ review.createdAt }})</span></div>
+        <div class="mt-2">
+          <strong>Staff Rate:</strong> {{ review.staffRate }}
+        </div>
+        <div class="mt-2">
+          <strong>Equipment Rate:</strong> {{ review.equipmentRate }}
+        </div>
+        <div class="mt-2">
+          <strong>Hygiene Rate:</strong> {{ review.hygieneRate }}
+        </div>
+        <div class="mt-2">
+          <strong>Space Rate:</strong> {{ review.spaceRate }}
+        </div>
+
+      </div>
+    </div>
+    <ng-template #noReviews>
+      <p>No reviews yet.</p>
+    </ng-template>
+  </div>
+</div>

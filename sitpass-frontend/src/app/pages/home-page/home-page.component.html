@@ -1,0 +1,43 @@
+<div class="flex justify-center flex-col pt-5">
+  <h3 class="text-3xl font-bold self-center">Facilities</h3>
+
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="flex flex-col items-center mb-5">
+    <div class="flex flex-row space-x-4">
+      <div>
+        <label for="city" class="block">City</label>
+        <input type="text" id="city" formControlName="city" class="border p-2 rounded">
+      </div>
+      <div>
+        <label for="discipline" class="block">Discipline</label>
+        <input type="text" id="discipline" formControlName="discipline" class="border p-2 rounded">
+      </div>
+      <div>
+        <label for="minRating" class="block">Min Rating</label>
+        <input type="number" id="minRating" formControlName="minRating" class="border p-2 rounded">
+      </div>
+      <div>
+        <label for="maxRating" class="block">Max Rating</label>
+        <input type="number" id="maxRating" formControlName="maxRating" class="border p-2 rounded">
+      </div>
+    </div>
+    <div class="flex flex-row space-x-4 mt-4">
+      <div>
+        <label for="workDay" class="block">Work Day</label>
+        <input type="text" id="workDay" formControlName="workDay" class="border p-2 rounded">
+      </div>
+      <div>
+        <label for="fromTime" class="block">From Time</label>
+        <input type="time" id="fromTime" formControlName="fromTime" class="border p-2 rounded">
+      </div>
+      <div>
+        <label for="untilTime" class="block">Until Time</label>
+        <input type="time" id="untilTime" formControlName="untilTime" class="border p-2 rounded">
+      </div>
+    </div>
+    <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Search</button>
+  </form>
+
+  <div class="grid grid-cols-3 gap-4 p-8">
+    <app-facility-card *ngFor="let facility of filteredFacilities" [facility]="facility"></app-facility-card>
+  </div>
+</div>
