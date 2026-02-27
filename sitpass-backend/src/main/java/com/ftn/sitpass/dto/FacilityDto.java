@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -49,9 +50,12 @@ public class FacilityDto {
                 .city(facility.getCity())
                 .totalRating(facility.getTotalRating())
                 .active(facility.isActive())
-               // .images(facility.getImages().stream().map(Image::getPath).toList())
-                .workDays(facility.getWorkDays().stream().map(WorkDayDto::convertToDto).toList())
-                .disciplines(facility.getDisciplines().stream().map(DisciplineDto::convertToDto).toList())
+                .images(facility.getImages() == null ? Collections.emptyList() :
+                        facility.getImages().stream().map(Image::getPath).toList())
+                .workDays(facility.getWorkDays() == null ? Collections.emptyList() :
+                        facility.getWorkDays().stream().map(WorkDayDto::convertToDto).toList())
+                .disciplines(facility.getDisciplines() == null ? Collections.emptyList() :
+                        facility.getDisciplines().stream().map(DisciplineDto::convertToDto).toList())
                 .build();
     }
 
@@ -65,8 +69,10 @@ public class FacilityDto {
                 .city(getCity())
                 .totalRating(getTotalRating())
                 .active(isActive())
-                .workDays(getWorkDays().stream().map(WorkDayDto::convertToModel).toList())
-                .disciplines(getDisciplines().stream().map(DisciplineDto::convertToModel).toList())
+                .workDays(getWorkDays() == null ? Collections.emptyList() :
+                        getWorkDays().stream().map(WorkDayDto::convertToModel).toList())
+                .disciplines(getDisciplines() == null ? Collections.emptyList() :
+                        getDisciplines().stream().map(DisciplineDto::convertToModel).toList())
                 .build();
     }
 }

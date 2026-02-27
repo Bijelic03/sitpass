@@ -4,6 +4,7 @@ import { FacilityPageComponent } from './pages/facility-page/facility-page.compo
 import { CreateFacilityPageComponent } from './pages/create-facility-page/create-facility-page.component';
 import { BookExerciseComponent } from './components/book-exercise/book-exercise.component';
 import { ReviewFormPageComponent } from './pages/review-form-page/review-form-page.component';
+import { UesSearchPageComponent } from './pages/ues-search-page/ues-search-page.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
@@ -12,5 +13,6 @@ export const routes: Routes = [
     { path: 'facilities/edit/:id', component: CreateFacilityPageComponent },
     { path: 'book-exercise/:facilityId', component: BookExerciseComponent },
     { path: 'leave-review/:facilityId', component: ReviewFormPageComponent },
+    { path: 'ues-search', component: UesSearchPageComponent },
 
 ];

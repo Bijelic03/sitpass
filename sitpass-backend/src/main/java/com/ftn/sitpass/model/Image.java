@@ -22,6 +22,12 @@ public class Image implements Serializable {
 
     private String path;
 
+    private String objectKey;
+
+    private String originalFileName;
+
+    private String contentType;
+
     @ManyToOne
     @Nullable
     private Facility facility;

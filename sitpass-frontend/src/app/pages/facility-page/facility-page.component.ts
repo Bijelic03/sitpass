@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FacilityDto } from '../../../../model/facilityDto';
 import { ReviewDto } from '../../../../model/reviewDto';
 import { CommonModule, NgIf } from '@angular/common';
@@ -21,6 +21,11 @@ export class FacilityPageComponent implements OnInit {
   reviews: ReviewDto[] = [];
   showModal = false;
   errorMessage: string = '';
+  uploadMessage = '';
+  selectedImages: File[] = [];
+  selectedDocument: File | null = null;
+  private readonly backendBaseUrl = 'http://localhost:8080';
+  private readonly fallbackImage = 'http://localhost:8080/images/gym-1.jpg';
 
   constructor(
     private route: ActivatedRoute,
@@ -67,6 +72,42 @@ export class FacilityPageComponent implements OnInit {
     return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
   }
 
+  formatCreatedAt(value: any): string {
+    if (!value) {
+      return '';
+    }
+    if (Array.isArray(value) && value.length >= 3) {
+      const [year, month, day] = value;
+      return `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${year}`;
+    }
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return String(value);
+    }
+    return parsed.toLocaleDateString('sr-RS');
+  }
+
+  getFacilityImages(): string[] {
+    const images = this.facility?.images ?? [];
+    if (images.length === 0) {
+      return [this.fallbackImage];
+    }
+    return images.map(image => this.resolveImageUrl(image));
+  }
+
+  private resolveImageUrl(image: string): string {
+    if (!image) {
+      return this.fallbackImage;
+    }
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return image;
+    }
+    if (image.startsWith('/')) {
+      return `${this.backendBaseUrl}${image}`;
+    }
+    return `${this.backendBaseUrl}/${image}`;
+  }
+
   deleteFacility() {
     if (this.facility?.id) {
       this.facility.active = false;
@@ -86,6 +127,43 @@ export class FacilityPageComponent implements OnInit {
 
   leaveReview() {
     this.router.navigate(['/leave-review', this.facility?.id]);
+  }
+
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) {
+      this.selectedImages = [];
+      return;
+    }
+    this.selectedImages = Array.from(input.files);
+  }
+
+  onDocumentSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedDocument = input.files && input.files.length > 0 ? input.files[0] : null;
+  }
+
+  uploadAssets(): void {
+    if (!this.facility?.id) {
+      return;
+    }
+    this.uploadMessage = '';
+    this.facilityService.uploadAssets(this.facility.id, this.selectedImages, this.selectedDocument).subscribe({
+      next: () => {
+        this.uploadMessage = 'Assets uploaded.';
+        this.getFacilityDetails(this.facility!.id!);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.uploadMessage = error?.error?.message || 'Upload failed.';
+      }
+    });
+  }
+
+  downloadFacilityPdf(): void {
+    if (!this.facility?.id) {
+      return;
+    }
+    window.open(this.facilityService.getDocumentDownloadUrl(this.facility.id), '_blank');
   }
 
 }

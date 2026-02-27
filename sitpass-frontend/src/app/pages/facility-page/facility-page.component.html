@@ -1,69 +1,83 @@
-<div *ngIf="facility" class="flex flex-col items-center pt-5">
-  <h2 class="text-3xl font-bold">{{ facility.name }}</h2>
-  <p class="text-gray-600">{{ facility.description }}</p>
-  <div class="mt-4">
-    <strong>Address:</strong> {{ facility.address }}, {{ facility.city }}
-  </div>
-  <div class="mt-2">
-    <strong>Created At:</strong> {{ facility.createdAt }}
-  </div>
-  <div class="mt-2">
-    <strong>Total Rating:</strong> {{ facility.totalRating }}
-  </div>
-  <div class="mt-2" *ngIf="facility.active">
-    <span class="inline-block bg-green-500 text-white px-2 py-1 rounded">Active</span>
-  </div>
-  <div class="mt-4">
-    <h3 class="text-2xl text-center">Images</h3>
-    <div class="grid grid-cols-3 gap-4">
-      <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
-      <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
-      <img class="w-full" src="https://via.placeholder.com/300" alt="Facility Image">
+<div *ngIf="facility" class="facility-shell">
+  <div class="facility-header">
+    <div>
+      <h1>{{ facility.name }}</h1>
+      <p>{{ facility.description }}</p>
     </div>
+    <span class="status-chip" [class.inactive]="!facility.active">{{ facility.active ? 'Active' : 'Inactive' }}</span>
   </div>
-  <div *ngIf="facility">
-    <div class="mt-4">
-      <h3 class="text-2xl">Work Days</h3>
-      <div *ngFor="let workDay of facility.workDays">
-        {{ workDay.day }}: {{ formatTime(workDay.fromTime) }} - {{ formatTime(workDay.untilTime) }}
+
+  <div class="facility-meta">
+    <div><strong>Address:</strong> {{ facility.address }}, {{ facility.city }}</div>
+    <div><strong>Created:</strong> {{ formatCreatedAt(facility.createdAt) }}</div>
+    <div><strong>Total rating:</strong> {{ facility.totalRating || 0 }}</div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Gallery</h2>
+      <button (click)="downloadFacilityPdf()" class="btn btn-emerald">Download PDF</button>
+    </div>
+    <div class="gallery-grid">
+      <img *ngFor="let image of getFacilityImages()" [src]="image" alt="Facility image">
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Upload Images and PDF</h2>
+    <div class="upload-grid">
+      <div>
+        <label>Images (2+ if this facility has no images)</label>
+        <input type="file" multiple accept="image/*" (change)="onImagesSelected($event)">
+      </div>
+      <div>
+        <label>PDF description document</label>
+        <input type="file" accept="application/pdf" (change)="onDocumentSelected($event)">
       </div>
     </div>
-  </div>
-  <div class="mt-4">
-    <h3 class="text-2xl">Disciplines</h3>
-    <ul>
-      <li *ngFor="let discipline of facility.disciplines">
-        {{ discipline.name }}
-      </li>
-    </ul>
-  </div>
-  <button (click)="deleteFacility()" class="px-4 py-2 bg-red-600 text-white rounded mb-2">Delete</button>
-  <button (click)="editFacility()" class="px-4 py-2 bg-blue-600 text-white rounded mb-2">Edit</button>
-  <button (click)="reserveFacility()" class="px-4 py-2 bg-blue-600 text-white rounded mb-2">Reserve</button>
-  <button (click)="leaveReview()" class="px-4 py-2 bg-blue-600 text-white rounded mb-2">Leave review</button>
-  
-  <div class="mt-4">
-    <h3 class="text-2xl text-center">Reviews</h3>
-    <div *ngIf="reviews.length > 0; else noReviews" class="flex">
-      <div *ngFor="let review of reviews" class="m-4 p-4 border rounded shadow">
-        <div class="font-bold">{{ review.authorName }} <span class="text-gray-500">({{ review.createdAt }})</span></div>
-        <div class="mt-2">
-          <strong>Staff Rate:</strong> {{ review.staffRate }}
-        </div>
-        <div class="mt-2">
-          <strong>Equipment Rate:</strong> {{ review.equipmentRate }}
-        </div>
-        <div class="mt-2">
-          <strong>Hygiene Rate:</strong> {{ review.hygieneRate }}
-        </div>
-        <div class="mt-2">
-          <strong>Space Rate:</strong> {{ review.spaceRate }}
-        </div>
+    <div class="upload-actions">
+      <button (click)="uploadAssets()" class="btn btn-indigo">Upload Assets</button>
+      <span>{{ uploadMessage }}</span>
+    </div>
+  </section>
 
+  <div class="split">
+    <section class="panel">
+      <h2>Work Days</h2>
+      <div class="list-row" *ngFor="let workDay of facility.workDays">
+        <span>{{ workDay.day }}</span>
+        <span>{{ formatTime(workDay.fromTime) }} - {{ formatTime(workDay.untilTime) }}</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Disciplines</h2>
+      <div class="tags">
+        <span *ngFor="let discipline of facility.disciplines">{{ discipline.name }}</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="actions">
+    <button (click)="deleteFacility()" class="btn btn-red">Delete</button>
+    <button (click)="editFacility()" class="btn btn-blue">Edit</button>
+    <button (click)="reserveFacility()" class="btn btn-blue">Reserve</button>
+    <button (click)="leaveReview()" class="btn btn-blue">Leave review</button>
+  </div>
+
+  <section class="panel">
+    <h2>Reviews</h2>
+    <div *ngIf="reviews.length > 0; else noReviews" class="reviews-grid">
+      <div *ngFor="let review of reviews" class="review-card">
+        <div class="author">{{ review.authorName }} <span>({{ review.createdAt }})</span></div>
+        <p><strong>Staff:</strong> {{ review.staffRate }}</p>
+        <p><strong>Equipment:</strong> {{ review.equipmentRate }}</p>
+        <p><strong>Hygiene:</strong> {{ review.hygieneRate }}</p>
+        <p><strong>Space:</strong> {{ review.spaceRate }}</p>
       </div>
     </div>
     <ng-template #noReviews>
       <p>No reviews yet.</p>
     </ng-template>
-  </div>
+  </section>
 </div>

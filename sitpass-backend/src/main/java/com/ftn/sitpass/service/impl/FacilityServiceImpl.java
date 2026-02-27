@@ -12,11 +12,13 @@ import com.ftn.sitpass.repository.DisciplineRepository;
 import com.ftn.sitpass.repository.FacilityRepository;
 import com.ftn.sitpass.repository.WorkDayRepository;
 import com.ftn.sitpass.service.FacilityService;
+import com.ftn.sitpass.service.ues.FacilityUesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class FacilityServiceImpl implements FacilityService {
     private final DisciplineRepository disciplineRepository;
 
     private final WorkDayRepository workDayRepository;
+    private final FacilityUesService facilityUesService;
 
     @Override
     public Facility getModel(Long id) {
@@ -54,23 +57,33 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     public void create(FacilityDto facilityDto) {
         Facility facility = facilityRepository.save(facilityDto.convertToModel());
-        facilityDto.getDisciplines()
+        List<DisciplineDto> disciplines = facilityDto.getDisciplines() == null
+                ? Collections.emptyList()
+                : facilityDto.getDisciplines();
+        disciplines
                 .forEach(disciplineDto -> {
                     saveDiscipline(disciplineDto, facility);
                 });
 
-        facilityDto.getWorkDays()
+        List<WorkDayDto> workDays = facilityDto.getWorkDays() == null
+                ? Collections.emptyList()
+                : facilityDto.getWorkDays();
+        workDays
                 .forEach(workDayDto -> {
                     saveWorkDay(workDayDto, facility);
                 });
 
+        facilityUesService.reindexFacility(facility.getId());
     }
 
     @Override
     public void update(Long id, FacilityDto facilityDto) {
         Facility facility = getModel(id);
 
-        facilityDto.getDisciplines()
+        List<DisciplineDto> disciplines = facilityDto.getDisciplines() == null
+                ? Collections.emptyList()
+                : facilityDto.getDisciplines();
+        disciplines
                 .forEach(disciplineDto -> {
                     if(disciplineDto.getId() == null) {
                         saveDiscipline(disciplineDto, facility);
@@ -81,7 +94,10 @@ public class FacilityServiceImpl implements FacilityService {
                     }
                 });
 
-        facilityDto.getWorkDays()
+        List<WorkDayDto> workDays = facilityDto.getWorkDays() == null
+                ? Collections.emptyList()
+                : facilityDto.getWorkDays();
+        workDays
                 .forEach(workDayDto -> {
                     if(workDayDto.getId() == null) {
                         saveWorkDay(workDayDto, facility);
@@ -101,6 +117,7 @@ public class FacilityServiceImpl implements FacilityService {
         facility.setName(facilityDto.getName());
 
         facilityRepository.save(facility);
+        facilityUesService.reindexFacility(facility.getId());
 
     }
 
@@ -110,11 +127,13 @@ public class FacilityServiceImpl implements FacilityService {
         facility.setTotalRating(newTotalRating);
 
         facilityRepository.save(facility);
+        facilityUesService.reindexFacility(facility.getId());
     }
 
     @Override
     public void delete(Long id) {
         facilityRepository.delete(getModel(id));
+        facilityUesService.deleteFromIndex(id);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.ftn.sitpass.repository.ReviewRepository;
 import com.ftn.sitpass.service.FacilityService;
 import com.ftn.sitpass.service.ReviewService;
 import com.ftn.sitpass.service.UserService;
+import com.ftn.sitpass.service.ues.FacilityUesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final FacilityService facilityService;
 
     private final RateRepository rateRepository;
+    private final FacilityUesService facilityUesService;
 
     @Override
     public List<ReviewDto> getReviewsByFacilityId(Long id) {
@@ -66,6 +68,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         ReviewDto reviewDto1 = ReviewDto.convertToDto(reviewRepository.save(review));
         facilityService.updateTotalRating(facilityId, getAverageFacilityRating(facilityId));
+        facilityUesService.reindexFacility(facilityId);
 
         return reviewDto1;
     }
